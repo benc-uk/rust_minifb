@@ -1249,3 +1249,54 @@ pub(crate) fn check_buffer_size(
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::MouseMode;
+
+    #[test]
+    fn mouse_mode_discard_inside_window_returns_some() {
+        let result = MouseMode::Discard.get_pos(50.0, 50.0, 1.0, 100.0, 100.0);
+        assert_eq!(result, Some((50.0, 50.0)));
+    }
+
+    #[test]
+    fn mouse_mode_discard_outside_window_returns_none() {
+        // x negative
+        assert_eq!(
+            MouseMode::Discard.get_pos(-1.0, 50.0, 1.0, 100.0, 100.0),
+            None
+        );
+        // y negative
+        assert_eq!(
+            MouseMode::Discard.get_pos(50.0, -1.0, 1.0, 100.0, 100.0),
+            None
+        );
+        // x >= width
+        assert_eq!(
+            MouseMode::Discard.get_pos(100.0, 50.0, 1.0, 100.0, 100.0),
+            None
+        );
+        // y >= height
+        assert_eq!(
+            MouseMode::Discard.get_pos(50.0, 100.0, 1.0, 100.0, 100.0),
+            None
+        );
+    }
+
+    #[test]
+    fn mouse_mode_pass_returns_coords_regardless_of_bounds() {
+        assert_eq!(
+            MouseMode::Pass.get_pos(-5.0, -10.0, 1.0, 100.0, 100.0),
+            Some((-5.0, -10.0))
+        );
+    }
+
+    #[test]
+    fn mouse_mode_clamp_clamps_to_window() {
+        assert_eq!(
+            MouseMode::Clamp.get_pos(-5.0, 200.0, 1.0, 100.0, 100.0),
+            Some((0.0, 99.0))
+        );
+    }
+}

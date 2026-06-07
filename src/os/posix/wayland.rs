@@ -952,6 +952,8 @@ impl Window {
                     // TODO
                 }
                 Event::Leave { serial, .. } => {
+                    self.mouse_x = -1.0;
+                    self.mouse_y = -1.0;
                     if self.pointer_visibility {
                         self.input.get_pointer().set_cursor(
                             serial,
